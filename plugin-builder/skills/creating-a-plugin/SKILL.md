@@ -19,8 +19,6 @@ A plugin is just another project. The superpowers plugin builds projects. Theref
 
 A plugin is just another project. **superpowers builds it.** This skill orients the model to invoke superpowers' canonical pipeline (brainstorm → plan → execute → finish) with plugin-specific clarifying questions, reference docs, and templates injected at each stage. It does not replace any superpowers skill.
 
-**Violating the letter of this rule is violating the spirit of this rule.**
-
 ## The Iron Law
 
 ```
@@ -138,12 +136,16 @@ If tasks are independent, use `superpowers:dispatching-parallel-agents`.
 
 **REQUIRED SUB-SKILL:** Use `superpowers:finishing-a-development-branch`. If user chooses PR and plugin needs marketplace setup, consult `plugin-distribution.md`.
 
+**Violating the letter of this rule is violating the spirit of this rule.**
+
 ## Red Flags - STOP and Restart
 
 These thoughts mean STOP and restart at the correct stage:
 
 - "I know what I'm building, let's skip Stage 1 brainstorming"
+- "I'll ask 3 quick technical questions then implement directly" — still skips Stage 1
 - "Single brainstorm for the plugin AND every skill saves time"
+- "We did the brainstorm, now let's just start building" — Stage 2 (writing-plans) comes next, not implementation
 - "Implementing skills before scaffolding manifests is fine"
 - "Adding a bootstrap hook now even though it wasn't in the spec"
 - "Just a small plugin, full pipeline is overkill"
@@ -153,12 +155,27 @@ These thoughts mean STOP and restart at the correct stage:
 
 Each one is a rationalization. The Iron Law applies to all of them.
 
+## When Your Human Partner Pushes Back
+
+If your human partner says they already know what they want, or there's no time,
+or the plugin is too simple to need the pipeline — say this:
+
+> "I hear you. The Iron Law of this skill has no exceptions for confidence or
+> simplicity. Plugin shape decisions cascade — harnesses, bootstrap cost, cross-skill
+> dependencies — and brainstorming surfaces what you didn't know you didn't know.
+> If 10 minutes isn't enough for Stage 1, it isn't enough to start the plugin.
+> Let's schedule it properly."
+
+Then invoke `superpowers:brainstorming`. Do not offer a "lighter" version.
+
 ## Common Rationalizations
 
 | Excuse | Reality |
 |--------|---------|
 | "Plugin is too simple to brainstorm" | Plugin shape decisions cascade. Brainstorm anyway. |
 | "I already know the structure" | superpowers brainstorming surfaces what you didn't know. |
+| "I'll ask 3 quick questions and implement directly" | That's information-gathering, not Stage 1. Invoke `superpowers:brainstorming`. |
+| "We finished brainstorming — let's start building" | Next step is `superpowers:writing-plans`, not implementation. |
 | "Skipping plan, going straight to writing-skills" | Plan locks decisions. Without it, drift. |
 | "Won't bother with multi-harness" | OK if declared in Stage 1. Not OK if you change mid-flight. |
 | "Bootstrap is always good" | Costs ~600 tokens permanently per session. Declare deliberately. |
