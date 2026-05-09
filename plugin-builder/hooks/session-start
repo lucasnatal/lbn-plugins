@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SessionStart hook for plugin-builder plugin
+
+set -euo pipefail
+
+# Determine plugin root directory
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Check if superpowers is installed (hard dependency)
+warning_message=""
+if ! find "${HOME}/.claude/plugins/cache" -maxdepth 4 -type d -name "superpowers" 2>/dev/null | grep -q .; then
+    warning_message="\n\n<important-reminder>plugin-builder requires superpowers. Ask your human partner to install it via \`/plugin install superpowers@superpowers-marketplace\` before proceeding.</important-reminder>"
+fi
+
+# Read creating-a-plugin content
+plugin_builder_content=$(cat "${PLUGIN_ROOT}/skills/creating-a-plugin/SKILL.md" 2>&1 || echo "Error reading creating-a-plugin skill")
+
+# Escape string for JSON embedding using bash parameter substitution.
+# Each ${s//old/new} is a single C-level pass - orders of magnitude
+# faster than the character-by-character loop this replaces.
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+plugin_builder_escaped=$(escape_for_json "$plugin_builder_content")
+warning_escaped=$(escape_for_json "$warning_message")
+session_context="<EXTREMELY_IMPORTANT>\nYou have plugin-builder installed.\n\n**Below is the full content of your 'plugin-builder:creating-a-plugin' skill - your introduction to using skills. For all other skills, use the 'Skill' tool:**\n\n${plugin_builder_escaped}\n\n${warning_escaped}\n</EXTREMELY_IMPORTANT>"
+
+# Output context injection as JSON.
+# Cursor hooks expect additional_context (snake_case).
+# Claude Code hooks expect hookSpecificOutput.additionalContext (nested).
+# Copilot CLI (v1.0.11+) and others expect additionalContext (top-level, SDK standard).
+# Claude Code reads BOTH additional_context and hookSpecificOutput without
+# deduplication, so we must emit only the field the current platform consumes.
+#
+# Uses printf instead of heredoc to work around bash 5.3+ heredoc hang.
+# See: https://github.com/obra/superpowers/issues/571
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  # Cursor sets CURSOR_PLUGIN_ROOT (may also set CLAUDE_PLUGIN_ROOT)
+  printf '{\n  "additional_context": "%s"\n}\n' "$session_context"
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  # Claude Code sets CLAUDE_PLUGIN_ROOT without COPILOT_CLI
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+else
+  # Copilot CLI (sets COPILOT_CLI=1) or unknown platform — SDK standard format
+  printf '{\n  "additionalContext": "%s"\n}\n' "$session_context"
+fi
+
+exit 0
