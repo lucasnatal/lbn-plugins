@@ -1,0 +1,19 @@
+{
+  "name": "plugin-builder",
+  "description": "Build Claude Code plugins using the canonical superpowers pipeline. Provides plugin-specific knowledge (anatomy, scaffolding, wiring, bootstrap, distribution) consumed by superpowers' brainstorming, writing-plans, and execution skills.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Lucas Bonetti Natal",
+    "email": "bonettinatal@gmail.com"
+  },
+  "homepage": "https://github.com/lucasnatal/lbn-plugins",
+  "repository": "https://github.com/lucasnatal/lbn-plugins",
+  "license": "MIT",
+  "keywords": [
+    "plugin",
+    "scaffolding",
+    "meta-plugin",
+    "superpowers",
+    "plugin-development"
+  ]
+}
