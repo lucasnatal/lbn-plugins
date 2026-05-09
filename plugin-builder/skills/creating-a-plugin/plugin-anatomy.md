@@ -45,7 +45,7 @@ A skill folder may contain these file types. Only `SKILL.md` is required; the ot
 |---|---|---|---|
 | **SKILL.md** | `SKILL.md` | Frontmatter always at session start; body on activation | Frontmatter ≤ 1024 chars |
 | **Lazy reference** | `<topic>.md` referenced as prose ("see foo.md") | Model decides to read at activation | Pay-per-read |
-| **Force-load reference** | `@<topic>.md` in SKILL.md body | Immediately when SKILL.md is read | 200k+ context preemptively |
+| **Force-load reference** | `@<topic>.md` in SKILL.md body | Immediately when SKILL.md is read | file's token count (typically 200-1000 tokens), preemptively |
 | **Prompt template** | `<role>-prompt.md` with `{PLACEHOLDER}` tokens | Controller fills and dispatches via Task tool | Per-dispatch only |
 | **Example** | `example.<ext>` (one excellent example, not multi-language) | Adapted by reader on demand | Pay-per-read |
 | **Script** | `*.sh`, `*.js`, `*.py` | Executed via Bash; only stdout consumes tokens | Stdout size only |
@@ -123,6 +123,8 @@ The brainstorming skill should pause after each answer, confirm understanding, a
 **Example answer:** "All five (Claude Code, Cursor, Codex, OpenCode, Gemini CLI)"
 
 **Implication:** Each declared harness adds a manifest file and (if hooks are declared) per-harness hook output detection. Multi-harness is the default for serious plugins because users install where they work. Dropping harnesses later is fine; adding them later means reopening Stage 1 because hook output formats and tool vocabulary differ across harnesses.
+
+**Note on Factory Droid and Copilot CLI:** These two harnesses reuse `.claude-plugin/` — declaring "Claude Code" implicitly covers them, so they don't appear as separate options in this question. Native support for Cursor / Codex / OpenCode / Gemini CLI requires their own manifests in addition to `.claude-plugin/`.
 
 ### 5. Bootstrap pattern
 

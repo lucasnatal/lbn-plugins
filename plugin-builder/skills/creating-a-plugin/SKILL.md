@@ -86,6 +86,20 @@ Inject these 8 plugin-specific clarifying questions into the brainstorm (full de
 
 Output: a spec at `docs/superpowers/specs/<date>-<plugin-name>-design.md` covering all 8 answers.
 
+## Stage 1.5: Worktree Setup
+
+**REQUIRED SUB-SKILL:** Use `superpowers:using-git-worktrees`.
+
+Plugin construction requires an isolated workspace before any plan tasks execute. The worktree:
+
+- Protects `main` from in-progress experimentation
+- Allows multi-task work without polluting the parent repo state
+- Is auto-detected by the worktree skill if already present
+
+If you are already in an isolated workspace (e.g., via `EnterWorktree` or pre-existing `.claude/worktrees/...`), the skill skips creation. Otherwise it creates one in the project's `.worktrees/` (or `.claude/worktrees/` if managed by the harness) on a feature branch.
+
+Do NOT begin Stage 2 (writing-plans) before Stage 1.5 is complete.
+
 ## Stage 2: Implementation Plan
 
 **REQUIRED SUB-SKILL:** Use `superpowers:writing-plans`. Consult `plugin-scaffolding.md` (layout, manifest paths) and `plugin-wiring.md` (REQUIRED markers, namespace).

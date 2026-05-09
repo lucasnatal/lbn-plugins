@@ -54,7 +54,7 @@ Two-step install for marketplace-hosted plugins:
 - `<marketplace-name>` is the `name` field from `marketplace.json` (often the repo name, but can differ).
 - `<plugin-name>` is the plugin's `name` field (matching across `marketplace.json` and `.claude-plugin/plugin.json`).
 
-Direct (non-marketplace) install for standalone plugins: `/plugin install <plugin-name>@<repo-name>` after `/plugin marketplace add <user>/<repo>`.
+Standalone plugin install (no separate marketplace.json): same two-step flow — `/plugin marketplace add <user>/<repo>` then `/plugin install <plugin-name>@<repo-name>`. The repo identifier doubles as the marketplace name.
 
 For OpenCode users, distribution is via `git+https://github.com/<user>/<repo>.git` referenced in the consumer's `opencode.json`.
 

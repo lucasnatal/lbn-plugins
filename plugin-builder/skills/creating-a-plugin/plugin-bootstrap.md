@@ -79,6 +79,8 @@ shift
 exec bash "${SCRIPT_DIR}/${SCRIPT_NAME}" "$@"
 ```
 
+Abridged for clarity — see `templates/hooks-polyglot.cmd.tmpl` for the full version with all bash search paths (Program Files, Program Files (x86), and PATH) and the comment explaining why scripts use extensionless filenames.
+
 Hook scripts (e.g., `session-start`) are **extensionless** — Claude Code's Windows auto-detection prepends `bash` to any `.sh` filename, which conflicts with the wrapper.
 
 ## Session-Start Script
