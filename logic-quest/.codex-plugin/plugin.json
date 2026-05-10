@@ -1,0 +1,22 @@
+{
+  "name": "logic-quest",
+  "version": "0.1.0",
+  "description": "Transform the LLM into Aldric the Wizard — a gamified predicate-logic learning platform with quests, XP, levels, and persistence.",
+  "author": {
+    "name": "Lucas Bonetti Natal",
+    "email": "bonettinatal@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["gamification", "logic", "education", "predicate-logic", "learning"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Logic Quest",
+    "shortDescription": "Gamified predicate logic learning with quests and XP",
+    "longDescription": "logic-quest transforms your AI assistant into Aldric the Wizard, a gamified guide through predicate logic and quantifiers. Progress through 5 grimoire chapters, earn XP, level up, and unlock achievements.",
+    "developerName": "Lucas Bonetti Natal",
+    "category": "Education",
+    "capabilities": ["predicate-logic", "gamification", "adaptive-learning"],
+    "defaultPrompt": ["Start my logic quest", "Continue my chapter", "Show my grimoire stats"],
+    "brandColor": "#6B46C1"
+  }
+}
