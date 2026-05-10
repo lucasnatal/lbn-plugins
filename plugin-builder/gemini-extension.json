@@ -1,0 +1,6 @@
+{
+  "name": "plugin-builder",
+  "description": "Build Claude Code plugins using the canonical superpowers pipeline.",
+  "version": "0.1.0",
+  "contextFileName": "GEMINI.md"
+}
