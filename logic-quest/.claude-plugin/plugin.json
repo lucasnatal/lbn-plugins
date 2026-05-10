@@ -1,0 +1,11 @@
+{
+  "name": "logic-quest",
+  "description": "Transform the LLM into Aldric the Wizard — a gamified predicate-logic learning platform with quests, XP, levels, and persistence.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Lucas Bonetti Natal",
+    "email": "bonettinatal@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["gamification", "logic", "education", "predicate-logic", "learning"]
+}
