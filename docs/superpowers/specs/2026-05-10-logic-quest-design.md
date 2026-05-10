@@ -120,15 +120,17 @@ File: `~/.logic-quest/profile.json`
 
 ## Quest Structure (v1 — 5 chapters)
 
-| Chapter | Theme | XP per Quest |
-|---------|-------|-------------|
-| 1 | Predicados simples e simbolização | 80 XP |
-| 2 | Quantificador universal (∀) | 100 XP |
-| 3 | Quantificador existencial (∃) | 100 XP |
-| 4 | Quantificadores encadeados | 120 XP |
-| 5 | Negação e equivalências | 150 XP |
+| Chapter | Theme | Exercises | Completion Bonus | Total XP (perfect) |
+|---------|-------|-----------|-----------------|-------------------|
+| 1 | Predicados simples e simbolização | 3 | 5 XP | 80 XP |
+| 2 | Quantificador universal (∀) | 3 | 25 XP | 100 XP |
+| 3 | Quantificador existencial (∃) | 3 | 25 XP | 100 XP |
+| 4 | Quantificadores encadeados | 4 | 20 XP | 120 XP |
+| 5 | Negação e equivalências | 5 | 25 XP | 150 XP |
 
 XP per exercise: 25 XP (correct first attempt), 15 XP (correct after retry), 0 XP (incorrect), -10 XP penalty per wrong attempt (applied to retry score, not total).
+
+Total XP from completing all 5 chapters perfectly: 550 XP → reaches level 4 (500 XP). Level 5 (900 XP) requires replaying chapters for exercise XP (no completion bonus on replay). This is intentional — level 5 is a mastery tier.
 
 ---
 
