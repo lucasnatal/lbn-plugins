@@ -116,6 +116,21 @@ Stage 1 produced spec stubs (name + purpose + trigger) for each skill. Stage 3 e
 2. Subagent invokes `superpowers:brainstorming` with skill X's stub as input → detailed design
 3. Subagent invokes `superpowers:writing-skills` → SKILL.md via RED-GREEN-REFACTOR
 
+**Discipline-enforcing skills require a different task in the plan.** If the brainstorm reveals a skill will have Iron Law / Red Flags / Rationalization tables (it shapes agent behavior under pressure), the plan task MUST include baseline pressure testing BEFORE writing the SKILL.md:
+
+```
+Task: Implement discipline skill X
+  Step 0 (RED): Dispatch adversarial subagent WITHOUT the skill content.
+                Give it a pressure scenario (3+ pressures). Force A/B/C choice.
+                Document exact rationalizations it uses to justify wrong choices.
+  Step 1 (GREEN): Write SKILL.md addressing those specific rationalizations.
+  Step 2 (REFACTOR): Re-dispatch same scenario WITH skill. If agent still
+                     bypasses — add explicit counter to Red Flags or Rationalizations
+                     table. Repeat until agent chooses correctly under pressure.
+```
+
+If the plan task only says "write SKILL.md with these sections" — the skill will be written without knowing what loopholes exist. That is not RED-GREEN-REFACTOR for documentation.
+
 Two-level rationale: Level 1 = holistic plugin view; Level 2 = per-skill rigor. One mega-brainstorm exhausts and produces lower quality.
 
 ## Stage 4: Execution

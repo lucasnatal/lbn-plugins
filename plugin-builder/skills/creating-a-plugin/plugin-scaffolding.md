@@ -115,6 +115,36 @@ Verify: `ls -la AGENTS.md` should show `AGENTS.md -> CLAUDE.md`.
 
 **`.version-bump.json`** — optional; declares the single source of truth for the plugin version. A small script reads this and rewrites every manifest's `version` field. Useful when the plugin ships to 5+ harnesses.
 
+## Plan Task Template: Implement a Skill
+
+When `superpowers:writing-plans` creates a task for implementing a skill, the task template differs by skill type (see `plugin-anatomy.md` — "Skill Types").
+
+**Reference / technique skill task:**
+```
+Task: Implement skill <name>
+  Step 1: Invoke superpowers:brainstorming with stub from spec
+  Step 2: Invoke superpowers:writing-skills → write SKILL.md
+  Step 3: Verify structure (line count, H2 sections, no TBD placeholders)
+  Step 4: Commit
+```
+
+**Discipline-enforcing skill task** (has Iron Law / Red Flags / Rationalization tables):
+```
+Task: Implement discipline skill <name>
+  Step 0 (RED): Dispatch adversarial subagent WITHOUT the SKILL.md.
+                Use pressure scenario from plugin-anatomy.md Skill Types section.
+                Document verbatim rationalizations used to justify bypass.
+  Step 1: Invoke superpowers:brainstorming with stub + RED findings as input
+  Step 2: Invoke superpowers:writing-skills → write SKILL.md addressing
+          the specific rationalizations found in Step 0 (not hypothetical ones)
+  Step 3 (GREEN): Re-dispatch same pressure scenario WITH skill.
+                  If agent bypasses → update Red Flags/Rationalizations → re-test.
+                  Repeat until agent complies under maximum pressure.
+  Step 4: Commit
+```
+
+If the plan has "write SKILL.md with these sections" without the RED phase — it was written without plugin-anatomy.md context. Push back and add the missing steps before execution.
+
 ## Templates Available
 
 Templates live in `<skill>/templates/` and are consumed by execution-stage subagents. Each template uses `{{PLACEHOLDER}}` tokens that the controller fills before writing the real file:

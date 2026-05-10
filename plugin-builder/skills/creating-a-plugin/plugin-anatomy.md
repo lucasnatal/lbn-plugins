@@ -73,6 +73,16 @@ Hook output JSON differs per harness — see `plugin-bootstrap.md` for harness d
 
 Use a single source of truth for version numbers (e.g., `.version-bump.json`) so all manifests stay in sync — multi-harness authors typically have a script that updates `package.json`, all `plugin.json` files, `marketplace.json`, and `gemini-extension.json` from a single source.
 
+## Skill Types
+
+Skills divide into two types with different creation requirements. The brainstorm must identify which type each skill is, because the plan task for creating it differs.
+
+**Reference / technique skills** — provide context, patterns, or how-to guidance. The model reads and applies them but doesn't have to be "persuaded" to comply. Creation: `superpowers:writing-skills` RED-GREEN-REFACTOR is sufficient but pressure testing is optional.
+
+**Discipline-enforcing skills** — shape agent behavior under pressure. They have Iron Law, Red Flags, and Rationalization tables. The model may find loopholes to rationalize around them. Creation: `superpowers:writing-skills` RED-GREEN-REFACTOR is **mandatory**, including baseline pressure testing (running adversarial scenarios WITHOUT the skill first to discover what rationalizations exist before writing it).
+
+**Flag in Stage 1 brainstorm:** when a skill stub has words like "always", "must", "before any X", "pipeline enforcement", or "discipline" in its purpose — it is discipline-enforcing. The spec must note this, and the plan task for that skill MUST include RED-GREEN-REFACTOR steps (see `creating-a-plugin/SKILL.md` Stage 3 for the task template).
+
 ## Common Plugin Shapes
 
 Three shapes capture the majority of mature plugin designs. Choose the simplest shape that fits — every added component (hooks, multiple skills, pipeline) is a maintenance tax.
