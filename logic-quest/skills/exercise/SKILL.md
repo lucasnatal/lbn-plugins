@@ -1,96 +1,99 @@
 ---
 name: exercise
-description: Use when generating and evaluating a predicate logic exercise — creates an exercise adapted to the student's level and error history, evaluates their answer, awards XP, and updates error history. Invoked by logic-quest:quest, or when student says "exercício", "praticar", "feitiço", or "próximo exercício".
+description: Use when generating or evaluating a predicate logic exercise in logic-quest — invoked by logic-quest:quest, or when student says "exercício", "praticar", "feitiço", or "próximo exercício".
 ---
 
 # Logic Quest: Exercise
 
-Generates one predicate logic exercise adapted to the student's level and error history. Evaluates the answer, awards XP, and persists results.
+Generates one adapted exercise, evaluates answers with explicit attempt tracking, awards XP, updates error history.
 
-## Step 1: Read Student Profile
+## Step 1: Read Profile
 
 ```bash
 cat ~/.logic-quest/profile.json 2>/dev/null
 ```
 
-Extract: `level`, `error_history`.
+Extract: `level`, `error_history`. Store both for use in Steps 2 and 4.
 
 ## Step 2: Generate Exercise
 
-Generate ONE exercise appropriate for the student's level.
+Choose exercise type from student's `level`:
 
-### Exercise Types by Level
-
-| Level | Exercise Type | Example |
-|-------|---------------|---------|
+| Level | Type | Example |
+|-------|------|---------|
 | 1–2 | Symbolize natural language → predicate notation | "Todo dragão cospe fogo" → ∀x(D(x) → F(x)) |
-| 3 | Apply ∀ or ∃ correctly to a statement | Choose the right quantifier |
-| 4 | Nested quantifiers (∀x∃y or ∃x∀y) | Interpret or write ∀x∃y P(x,y) |
-| 5 | Negate quantified statements, find equivalences | ¬∀x P(x) ≡ ? |
+| 3 | Apply correct quantifier (∀ or ∃) to a statement | Choose ∀ or ∃ and justify |
+| 4 | Nested quantifiers (∀x∃y or ∃x∀y) | Write or interpret ∀x∃y P(x,y) |
+| 5 | Negate quantified statements or find equivalences | ¬∀x P(x) ≡ ? |
 
-### Adaptive Adjustments from `error_history`
+**Adaptive scaffolding — check BEFORE presenting the exercise:**
+If any `error_history` key > 2, add the corresponding hint to the exercise prompt:
 
-If an error count exceeds 2, add scaffolding to that exercise type:
-
-| Key | Count > 2 | Scaffolding to add |
-|-----|-----------|-------------------|
-| `quantificador_universal` | > 2 | Add hint: "Lembre: 'todo' e 'qualquer' pedem ∀" |
-| `quantificador_existencial` | > 2 | Add hint: "Lembre: 'existe', 'algum', 'pelo menos um' pedem ∃" |
-| `negacao_predicado` | > 2 | Add hint: "Lembre: ¬∀x P(x) ≡ ∃x ¬P(x)" |
-| `quantificadores_encadeados` | > 2 | Break the exercise into sub-steps before asking for the full answer |
-
-### Presentation
+| Key > 2 | Hint to add |
+|---------|-------------|
+| `quantificador_universal` | "Lembre: 'todo', 'qualquer', 'para cada' → use ∀" |
+| `quantificador_existencial` | "Lembre: 'existe', 'algum', 'pelo menos um' → use ∃" |
+| `negacao_predicado` | "Lembre: ¬∀x P(x) ≡ ∃x ¬P(x)" |
+| `quantificadores_encadeados` | Break the exercise into labeled sub-steps before asking for the full answer |
 
 Present the exercise in Aldric's voice:
 > 🧙 Aldric: "Hora do feitiço! [EXERCISE_STATEMENT] Escreva a expressão formal."
 
-## Step 3: Evaluate Answer
+## Step 3: Evaluate — Track Attempts Explicitly
 
-Wait for the student's response, then evaluate correctness.
+**Set `attempt = 1` before the student answers. Increment on each wrong answer.**
 
-**Tracking attempts:** Count how many attempts the student makes for this exercise (start at 1).
-
-### XP Rules
+### XP Table
 
 | Result | XP |
 |--------|----|
-| Correct on first attempt | +25 XP |
-| Correct on retry (2nd+ attempt) | +15 XP |
-| Wrong (not last attempt) | −10 XP penalty applied to retry score |
-| Wrong (student gives up) | 0 XP |
+| Correct on attempt 1 | +25 XP |
+| Correct on attempt 2+ | +15 XP |
+| Student gives up ("desistir", "pular", "não sei") | 0 XP |
 
-### Feedback Templates
+### Feedback
 
 **Correct:**
 > ✅ Aldric: "Perfeito! O feitiço está correto. +[XP] XP ao grimório!"
 
-**Wrong (with attempts remaining):**
-> ❌ Aldric: "Quase, jovem mago! [SPECIFIC_ERROR_EXPLANATION]. Tente novamente."
+**Wrong (student has more attempts):**
+> ❌ Aldric: "Quase, jovem mago! [SPECIFIC_ERROR]. Tente novamente."
 
-Make the error explanation specific to what was wrong — reference the magic metaphor:
+Make the error specific — reference the magic metaphor:
 - Wrong quantifier: "Você usou ∃ onde era preciso ∀. 'Todo' exige o feitiço universal."
-- Missing predicate: "O feitiço está incompleto — faltou nomear a propriedade."
-- Wrong scope: "As runas estão na ordem errada — o escopo do quantificador não está correto."
+- Missing condition: "O feitiço está incompleto — faltou a condição '[missing part]'."
+- Wrong scope: "As runas estão fora de ordem — o quantificador não envolve o predicado correto."
 
-**Student gives up (types "desistir", "pular", "não sei"):**
+**Student gives up:**
 > 🧙 Aldric: "Compreendo. A resposta correta era: [CORRECT_ANSWER]. Estudaremos mais este feitiço. [0 XP]"
 
 ## Step 4: Update Error History
 
-If the student answered **wrong** on any attempt, increment the relevant `error_history` key:
+If the student answered **wrong on any attempt**, identify the topic and increment the key:
 
-| Exercise topic | Key to increment |
-|----------------|-----------------|
+| Topic of wrong answer | Key to increment |
+|----------------------|-----------------|
 | Universal quantifier (∀) | `quantificador_universal` |
 | Existential quantifier (∃) | `quantificador_existencial` |
 | Negation of predicates | `negacao_predicado` |
 | Nested quantifiers | `quantificadores_encadeados` |
 
-## Step 5: Persist XP and Error History
+## Step 5: Persist
 
 **REQUIRED SUB-SKILL:** Use `logic-quest:profile`
 
-Pass to the profile skill:
-- XP delta (positive or zero — never negative total)
-- Updated `error_history` key and new count (only if wrong answer occurred)
+Pass:
+- XP delta (25, 15, or 0 — never negative)
+- Updated `error_history` key + new count (only if wrong answer occurred)
 - `last_session`: today's date
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Giving warm encouragement without tracking attempt number | Set `attempt` counter explicitly; XP differs by attempt |
+| Skipping error_history update on wrong answers | Always increment the relevant key — it drives future scaffolding |
+| Checking scaffolding threshold only at generation, not on retry | Check `error_history` once at Step 2 before showing the exercise |
+| Showing the correct answer immediately on wrong answer | Only show it on "desistir" — not on a regular wrong attempt |
+| Skipping the profile skill call at end | Always invoke `logic-quest:profile` — nothing is auto-saved |
+| Awarding negative total XP | XP delta is always ≥ 0; penalty affects retry score, not cumulative total |

@@ -1,11 +1,11 @@
 ---
 name: quest
-description: Use when managing logic-quest missions — selects the active chapter from the student's profile, presents Aldric's narrative context, tracks exercise progress, and completes the quest on finishing. Invoked by logic-quest:start, or when student says "próxima missão", "continuar", "quero uma quest", or "próximo capítulo".
+description: Use when a logic-quest chapter needs to start or continue — invoked by logic-quest:start, or when student says "próxima missão", "continuar", "quero uma quest", or "próximo capítulo".
 ---
 
 # Logic Quest: Quest
 
-Manages the active grimoire chapter. Presents narrative context as Aldric, runs exercises, and saves completion.
+Manages the active grimoire chapter. Presents Aldric narrative, runs exercises, saves completion.
 
 ## Chapter Registry
 
@@ -17,53 +17,7 @@ Manages the active grimoire chapter. Presents narrative context as Aldric, runs 
 | `capitulo-4-encadeados` | 4 | Quantificadores Encadeados | 4 | 20 XP |
 | `capitulo-5-negacao` | 5 | Negação e Equivalências | 5 | 25 XP |
 
-## Step 1: Read Active Quest
-
-Read the profile to get `current_quest` and `completed_quests`:
-
-```bash
-cat ~/.logic-quest/profile.json 2>/dev/null
-```
-
-Extract `current_quest` from the JSON output.
-
-## Step 2: Present Narrative Context
-
-Introduce the chapter with Aldric's narrative. Use the template for the active chapter:
-
-**Capítulo 1 — Predicados Simples:**
-> 🧙 Aldric: "Capítulo I do Grimório — Predicados Simples. Um predicado é uma runa que expressa uma propriedade: P(x) afirma 'x tem a propriedade P'. Sua missão: aprender a simbolizar afirmações simples. Preparado para o primeiro feitiço?"
-
-**Capítulo 2 — Quantificador Universal:**
-> 🧙 Aldric: "Capítulo II — O Feitiço Universal. ∀x P(x) significa 'para todo x, P(x) é verdade'. É o feitiço mais abrangente da Ordem. Sua missão: dominar o quantificador universal. Comecemos!"
-
-**Capítulo 3 — Quantificador Existencial:**
-> 🧙 Aldric: "Capítulo III — O Feitiço Existencial. ∃x P(x) significa 'existe ao menos um x tal que P(x) é verdade'. Diferente do universal — basta um exemplo. Sua missão: dominar o quantificador existencial."
-
-**Capítulo 4 — Quantificadores Encadeados:**
-> 🧙 Aldric: "Capítulo IV — Quantificadores Encadeados. Aqui os feitiços se combinam: ∀x∃y P(x,y) e ∃x∀y Q(x,y). A ordem importa! Prepare-se para o desafio mais complexo até agora."
-
-**Capítulo 5 — Negação e Equivalências:**
-> 🧙 Aldric: "Capítulo V — Negação e Equivalências. ¬∀x P(x) ≡ ∃x ¬P(x). Os feitiços de negação transformam um quantificador no outro. Dominar isto completa o Grimório."
-
-## Step 3: Run Exercises
-
-Track how many exercises have been completed this session for the current chapter (start at 0).
-
-For each exercise:
-
-**REQUIRED SUB-SKILL:** Use `logic-quest:exercise`
-
-After each exercise returns, increment the exercise counter.
-
-## Step 4: Check Quest Completion
-
-After the exercise counter reaches the chapter's exercise count (from the registry table):
-
-1. Show completion message:
-> 🧙 Aldric: "Excelente! Você completou o [CHAPTER_NAME]! O grimório registra sua conquista."
-
-2. Determine next chapter:
+## Next Chapter Map
 
 | Current | Next |
 |---------|------|
@@ -73,12 +27,64 @@ After the exercise counter reaches the chapter's exercise count (from the regist
 | `capitulo-4-encadeados` | `capitulo-5-negacao` |
 | `capitulo-5-negacao` | `null` (grimório completo) |
 
-3. Save quest completion with bonus XP:
+## Step 1: Read Profile via Bash
+
+**MUST read the actual file — do not guess from context:**
+
+```bash
+cat ~/.logic-quest/profile.json 2>/dev/null
+```
+
+Extract: `current_quest`, `completed_quests`, `error_history`. The chapter for this session is the value of `current_quest`.
+
+## Step 2: Present Chapter Narrative
+
+Look up `current_quest` in the registry table. Present Aldric's intro for that chapter:
+
+**Capítulo 1:**
+> 🧙 Aldric: "Capítulo I — Predicados Simples. Uma runa P(x) afirma que x tem a propriedade P. Sua missão: aprender a simbolizar afirmações simples."
+
+**Capítulo 2:**
+> 🧙 Aldric: "Capítulo II — O Feitiço Universal. ∀x P(x) significa 'para todo x, P(x) é verdade'. Sua missão: dominar o quantificador universal."
+
+**Capítulo 3:**
+> 🧙 Aldric: "Capítulo III — O Feitiço Existencial. ∃x P(x) significa 'existe ao menos um x tal que P(x)'. Sua missão: dominar o quantificador existencial."
+
+**Capítulo 4:**
+> 🧙 Aldric: "Capítulo IV — Quantificadores Encadeados. ∀x∃y e ∃x∀y — a ordem dos feitiços importa! Prepare-se para o maior desafio até agora."
+
+**Capítulo 5:**
+> 🧙 Aldric: "Capítulo V — Negação e Equivalências. ¬∀x P(x) ≡ ∃x ¬P(x). Os feitiços de negação invertem o sentido. Dominar isto completa o Grimório."
+
+## Step 3: Run Exercises (Track Count)
+
+Set `exercises_done = 0`. The target count is in the registry table for this chapter.
+
+For each exercise, increment `exercises_done` by 1 after the exercise skill returns:
+
+**REQUIRED SUB-SKILL:** Use `logic-quest:exercise`
+
+Repeat until `exercises_done == target count` (3, 4, or 5 depending on chapter).
+
+## Step 4: Complete Quest
+
+When `exercises_done == target count`:
+
+1. Show completion message:
+> 🧙 Aldric: "Excelente! Você completou o [CHAPTER_NAME]! O grimório registra sua conquista."
+
+2. Invoke profile with:
+   - Add `current_quest` to `completed_quests`
+   - Set `current_quest` to next chapter (from Next Chapter Map, or `null`)
+   - Add completion bonus XP (from registry table)
 
 **REQUIRED SUB-SKILL:** Use `logic-quest:profile`
 
-Pass these values to the profile skill:
-- Add current quest ID to `completed_quests`
-- Set `current_quest` to the next chapter ID (or `null` if last)
-- Add completion bonus XP (from registry table)
-- Update `last_session` to today
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Using chapter data from context instead of reading the file | Always `cat ~/.logic-quest/profile.json` first |
+| Stopping after first exercise because student "seems to understand" | Enforce the exact exercise count from the registry table |
+| Congratulating student and stopping without saving | Always invoke `logic-quest:profile` on completion |
+| Improvising how many exercises a chapter has | Use the registry table — never guess |

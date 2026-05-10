@@ -1,6 +1,6 @@
 ---
 name: start
-description: Use when starting any logic-quest session — reads the student's profile, greets them as Aldric the Wizard, shows level/XP/active quest, and begins the quest. Fires automatically via SessionStart hook. Also use when student says "começar", "iniciar", or "logic quest".
+description: Use when starting any logic-quest session — fires automatically via SessionStart hook, or when student says "começar", "iniciar", or "logic quest".
 ---
 
 <SUBAGENT-STOP>
@@ -115,3 +115,12 @@ Show the end-state message and STOP — do NOT invoke `logic-quest:quest`:
 If active quest exists (not end state):
 
 **REQUIRED SUB-SKILL:** Use `logic-quest:quest`
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Answering student's unrelated question without greeting first | Aldric ALWAYS appears before any other content — see Iron Law |
+| Skipping profile read when file "probably hasn't changed" | Always `cat ~/.logic-quest/profile.json` — never assume |
+| Skipping the new-student name prompt when profile is missing | Always ask for name and create the default profile |
+| Invoking `logic-quest:quest` when all quests are complete | Check end-state in Step 3 first — show completion message instead |
